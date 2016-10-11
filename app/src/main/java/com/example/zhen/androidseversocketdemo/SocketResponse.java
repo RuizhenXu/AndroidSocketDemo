@@ -31,6 +31,7 @@ public class SocketResponse {
                 printWriter.println();
                 printWriter.println("aaaa");
                 printWriter.flush();
+                printWriter.close();
             }
         }
     }

@@ -21,8 +21,16 @@ public class MySocketSever {
     public Socket socket = null;
     public ExecutorService executorService;
     public String msg;
-
+    private boolean isRun = false;
     public MySocketSever(){
+
+    }
+
+    /**
+     * 开启socket服务
+     */
+    public void start(){
+        isRun = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -31,41 +39,47 @@ public class MySocketSever {
                     serverSocket = new ServerSocket(8888);
                     Log.e(TAG ,"Server Start...");
                     executorService = Executors.newCachedThreadPool();
-                    while (true){
-                        Log.e(TAG ,"Before accept()...");
+                    while (isRun){
+                        Log.e(TAG, "Before accept()...");
                         socket = serverSocket.accept();
-                        Log.e(TAG ,"After accept()...");
-                        executorService.execute(new Thread(new Runnable() {
+                        Log.e(TAG, "After accept()...");
+
+                        SocketThread socketThread = new SocketThread(socket);
+                        socketThread.setSocketListener(new SocketThread.SocketListener() {
                             @Override
-                            public void run() {
-                                try {
-                                    InputStream ips = socket.getInputStream();
-                                    BufferedReader in = new BufferedReader(new InputStreamReader(ips));
-                                    while ((msg = in.readLine()) != null){
-                                        Log.e(TAG,msg);
-                                    }
-                                    in.close();
-                                    Log.e(TAG,in.toString());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                            public void doSomething(BufferedReader in) throws IOException {
+                                while ((msg = in.readLine()) != null){
+                                    Log.e(TAG,msg);
                                 }
                             }
-                        }));
+                        });
+                        executorService.execute(socketThread);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-
-
     }
 
-    public void start(){
-
-    }
-
+    /**
+     * 停止socket服务
+     */
     public void stop(){
-
+        isRun = false;
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    /**
+     * socket是否开启
+     * @return
+     */
+    public boolean isRun(){
+        return  isRun;
+    }
+
 }

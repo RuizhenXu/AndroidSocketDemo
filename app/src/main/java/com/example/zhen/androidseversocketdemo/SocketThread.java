@@ -31,6 +31,9 @@ public class SocketThread implements Runnable{
             InputStream ips = socket.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(ips));
 
+            SocketResponse socketResponse = new SocketResponse(socket);
+            socketResponse.response();
+            Log.e(TAG, "====");
             if (socketListener != null){
                 socketListener.doSomething(in);
             }

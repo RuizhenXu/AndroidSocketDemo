@@ -8,10 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
 
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +23,29 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        MySocketSever socketSever = new MySocketSever();
+        TextView textView = (TextView) findViewById(R.id.ip_tv);
+        String ip = Utils.getIP(this);
+        textView.setText(ip);
+
+        final MySocketSever socketSever = new MySocketSever();
+        socketSever.start();
         final MySocketClient socketClient = new MySocketClient();
+
+        Button startBtn = (Button) findViewById(R.id.start_socket);
+        Button stopBtn = (Button) findViewById(R.id.stop_socket);
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                socketSever.start();
+            }
+        });
+
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                socketSever.stop();
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

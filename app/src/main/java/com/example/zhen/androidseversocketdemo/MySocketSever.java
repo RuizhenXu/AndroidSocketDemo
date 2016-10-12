@@ -40,17 +40,15 @@ public class MySocketSever {
                     Log.e(TAG ,"Server Start...");
                     executorService = Executors.newCachedThreadPool();
                     while (isRun){
-                        Log.e(TAG, "Before accept()...");
+                        Log.e(TAG, "Before accept()... ");
                         socket = serverSocket.accept();
                         Log.e(TAG, "After accept()...");
 
                         SocketThread socketThread = new SocketThread(socket);
-                        socketThread.setSocketListener(new SocketThread.SocketListener() {
+                        socketThread.setRequestListener(new SocketThread.RequestListener() {
                             @Override
-                            public void doSomething(BufferedReader in) throws IOException {
-                                while ((msg = in.readLine()) != null){
-                                    Log.e(TAG,msg);
-                                }
+                            public void getRequest(SocketRequest socketRequest) {
+                                Log.e(TAG,socketRequest.toString());
                             }
                         });
                         executorService.execute(socketThread);
@@ -69,8 +67,9 @@ public class MySocketSever {
         isRun = false;
         try {
             serverSocket.close();
+            serverSocket = null;
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
     }
 

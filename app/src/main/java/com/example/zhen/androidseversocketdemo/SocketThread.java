@@ -2,10 +2,8 @@ package com.example.zhen.androidseversocketdemo;
 
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
@@ -13,41 +11,55 @@ import java.net.Socket;
  */
 public class SocketThread implements Runnable{
     private Socket socket;
-    private String msg;
+    private RequestListener requestListener = null;
     public static String TAG = "SocketThread";
-    private SocketListener socketListener;
 
     public SocketThread(Socket socket){
         this.socket = socket;
-    }
-
-    public void setSocketListener(SocketListener socketListener){
-        this.socketListener = socketListener;
     }
 
     @Override
     public void run() {
         try {
             InputStream ips = socket.getInputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(ips));
-
-            SocketResponse socketResponse = new SocketResponse(socket);
-            socketResponse.response();
-            Log.e(TAG, "====");
-            if (socketListener != null){
-                socketListener.doSomething(in);
+//            if (ips.available() == 0){
+//                return;
+//            }
+//            BufferedReader in = new BufferedReader(new InputStreamReader(ips));
+            SocketRequest socketRequest = new SocketRequest();
+            Socket socket1 = socketRequest.resolveRequest(socket);
+            if (requestListener != null){
+                requestListener.getRequest(socketRequest);
             }
-
-            in.close();
-            Log.e(TAG,in.toString());
+//            boolean isFirst = true;
+//            while ((line = in.readLine()) != null){
+//                //读到""时候，为http头的结束,跳出while，防止阻塞
+//                if ("".equals(line)){
+//                    break;
+//                }
+//                if (isFirst){
+//                    //http请求第一行为请求的方法和http版本
+//                    String[] attr = line.split(" ");
+//                    socketRequset.setMethod(attr[0]);
+//                    socketRequset.setHttpParams(attr[1]);
+//                    socketRequset.setHttpVersion(attr[2]);
+//                }else {
+//                    String[] attr = line.split(": ");
+//                    socketRequset.addHttpHead(attr[0], attr[1]);
+//                }
+//                isFirst = false;
+//                Log.e(TAG,line);
+//            }
+            SocketResponse socketResponse = new SocketResponse(socket1);
+            socketResponse.response();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-
-    interface SocketListener {
-        void doSomething(BufferedReader in) throws IOException;
+    public void setRequestListener(RequestListener requestListener){
+        this.requestListener = requestListener;
+    }
+    interface RequestListener{
+        void getRequest(SocketRequest socketRequest);
     }
 }

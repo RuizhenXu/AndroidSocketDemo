@@ -34,7 +34,7 @@ public class SocketResponse {
         httpHeaders.put("Connection","keep-alive");
 //        httpHeaders.put("Content-Encoding","gzip");
         httpHeaders.put("Content-type","text/html; charset=utf-8");
-        httpHeaders.put("Date",getRFC822());
+        httpHeaders.put("Date",Utils.getRFC822());
     }
 
     public SocketResponse(Socket socket){
@@ -116,9 +116,5 @@ public class SocketResponse {
         this.reasonPhrase = reasonPhrase;
     }
 
-    private String getRFC822(){
-        DateFormat df = new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
-        String time = df.format(new Date());
-        return time + " GMT";
-    }
+
 }

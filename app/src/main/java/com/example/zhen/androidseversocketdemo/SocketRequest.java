@@ -22,7 +22,6 @@ public class SocketRequest {
 
 
     private Socket mSocket;
-    private InputStream is = null;
     private boolean isFirst = true;
     private String line;
 

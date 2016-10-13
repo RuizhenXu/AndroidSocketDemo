@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.security.Provider;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,9 +30,11 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(ip);
 
         final MySocketSever socketSever = new MySocketSever();
-        socketSever.start();
+        WebConfig webConfig = new WebConfig();
+        webConfig.setPort(8888);
+        socketSever.setWebConfig(webConfig).start();
+//        socketSever.start();
         final MySocketClient socketClient = new MySocketClient();
-
         Button startBtn = (Button) findViewById(R.id.start_socket);
         Button stopBtn = (Button) findViewById(R.id.stop_socket);
         startBtn.setOnClickListener(new View.OnClickListener() {

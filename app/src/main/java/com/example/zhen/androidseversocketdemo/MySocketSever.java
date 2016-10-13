@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -17,13 +18,20 @@ import java.util.concurrent.Executors;
 public class MySocketSever {
 
     public static String TAG = "MySeverSocket";
-    public ServerSocket serverSocket = null;
-    public Socket socket = null;
-    public ExecutorService executorService;
-    public String msg;
-    private boolean isRun = false;
-    public MySocketSever(){
+    private WebConfig webConfig;
 
+    private ServerSocket serverSocket = null;
+    private Socket socket = null;
+    private ExecutorService executorService;
+    private boolean isRun = false;
+
+
+    public MySocketSever(){
+        this(new WebConfig());
+    }
+
+    public MySocketSever(WebConfig webConfig){
+        this.webConfig = webConfig;
     }
 
     /**
@@ -36,13 +44,13 @@ public class MySocketSever {
             public void run() {
                 socket = new Socket();
                 try {
-                    serverSocket = new ServerSocket(8888);
-                    Log.e(TAG ,"Server Start...");
+                    serverSocket = new ServerSocket(webConfig.getPort());
+                    SocketLog.e(TAG, "Server Start...");
                     executorService = Executors.newCachedThreadPool();
                     while (isRun){
-                        Log.e(TAG, "Before accept()... ");
+                        SocketLog.e(TAG, "Before accept()... ");
                         socket = serverSocket.accept();
-                        Log.e(TAG, "After accept()...");
+                        SocketLog.e(TAG, "After accept()...");
 
                         SocketThread socketThread = new SocketThread(socket);
                         socketThread.setRequestListener(new SocketThread.RequestListener() {
@@ -81,4 +89,12 @@ public class MySocketSever {
         return  isRun;
     }
 
+    public WebConfig getWebConfig() {
+        return webConfig;
+    }
+
+    public MySocketSever setWebConfig(WebConfig webConfig) {
+        this.webConfig = webConfig;
+        return this;
+    }
 }
